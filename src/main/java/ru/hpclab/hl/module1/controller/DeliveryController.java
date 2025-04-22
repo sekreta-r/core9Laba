@@ -7,6 +7,8 @@ import ru.hpclab.hl.module1.service.DeliveryService;
 import java.time.Month;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/deliveries")
@@ -48,4 +50,12 @@ public class DeliveryController {
     public Map<Month, Double> getTotalWeightByMonth(@PathVariable Long courierId) {
         return deliveryService.getTotalWeightByMonth(courierId);
     }
+
+    @GetMapping("/by-courier/{courierId}")
+    public List<DeliveryDTO> getByCourier(@PathVariable Long courierId) {
+        return deliveryService.getAllDeliveries().stream()
+                .filter(d -> d.getCourierId().equals(courierId))
+                .collect(Collectors.toList());
+    }
+
 }
