@@ -19,7 +19,7 @@ services:
       start_period: 10s
 
   core-service:
-    image: sekretaria/core-service
+    image: sekretaria/corelab9
     container_name: core-service
     restart: always
     depends_on:
@@ -46,7 +46,7 @@ services:
       CORE_SERVICE_PORT: ${SERVER_PORT}
 
   additional-app:
-    image: sekretaria/joinlab8
+    image: sekretaria/joinlab9
     container_name: additional-app
     restart: always
     depends_on:
