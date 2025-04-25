@@ -19,7 +19,7 @@ services:
       start_period: 10s
 
   core-service:
-    image: sekretaria/corelab9
+    image: sekretaria/corelab12
     container_name: core-service
     restart: always
     depends_on:
@@ -62,6 +62,10 @@ services:
       CORE_SERVICE_PORT: ${CORE_SERVICE_PORT}
       SERVER_PORT: ${SERVER_PORT}
       TOMCAT_THREADS: ${TOMCAT_THREADS}
+      KAFKA_HOSTS: ${KAFKA_HOSTS:-hl22.zil:9094,hl23.zil:9094}
+      KAFKA_GROUP_ID: ${KAFKA_GROUP_ID:-esecretareva-consumer-group}
+      KAFKA_TOPIC: ${KAFKA_TOPIC:-var15}
+      KAFKA_CONCURRENCY: ${KAFKA_CONCURRENCY:-2}
 
 networks:
   app-network:

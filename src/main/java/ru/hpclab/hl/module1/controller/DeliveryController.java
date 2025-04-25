@@ -2,6 +2,7 @@ package ru.hpclab.hl.module1.controller;
 
 import org.springframework.web.bind.annotation.*;
 import ru.hpclab.hl.module1.dto.DeliveryDTO;
+import ru.hpclab.hl.module1.entity.DeliveryEntity;
 import ru.hpclab.hl.module1.service.DeliveryService;
 
 
@@ -47,6 +48,17 @@ public class DeliveryController {
         DeliveryDTO result = deliveryService.saveDelivery(deliveryDTO);
         observabilityService.stop(metric);
         return result;
+    }
+
+    @PutMapping("/{id}")
+    public DeliveryDTO update(@PathVariable Long id, @RequestBody DeliveryEntity entity) {
+        observabilityService.start(getClass().getSimpleName() + ":update");
+
+        DeliveryDTO updatedOrder = deliveryService.update(id, entity);
+
+        observabilityService.stop(getClass().getSimpleName() + ":update");
+
+        return updatedOrder;
     }
 
     @PostMapping("/clear")

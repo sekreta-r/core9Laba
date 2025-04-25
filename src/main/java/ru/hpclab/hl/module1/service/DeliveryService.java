@@ -1,5 +1,6 @@
 package ru.hpclab.hl.module1.service;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import ru.hpclab.hl.module1.dto.DeliveryDTO;
 import ru.hpclab.hl.module1.entity.DeliveryEntity;
@@ -10,7 +11,7 @@ import ru.hpclab.hl.module1.repository.DeliveryRepository;
 import ru.hpclab.hl.module1.repository.CourierRepository;
 import ru.hpclab.hl.module1.repository.ParcelRepository;
 import ru.hpclab.hl.module1.entity.DeliveryStatus;
-
+import java.beans.PropertyDescriptor;
 
 import lombok.RequiredArgsConstructor;
 import ru.hpclab.hl.module1.service.statistics.ObservabilityService;
@@ -85,10 +86,37 @@ public class DeliveryService {
         return result;
     }
 
+    public DeliveryDTO update(Long id, DeliveryEntity updatedEntity) {
+        observabilityService.start(getClass().getSimpleName() + ":update");
+
+        DeliveryEntity existedEntity = deliveryRepository.findById(id).orElseThrow();
+        BeanUtils.copyProperties(updatedEntity, existedEntity, getNullPropertyNames(updatedEntity));
+        DeliveryEntity savedEntity = deliveryRepository.save(existedEntity);
+
+        DeliveryDTO result = DeliveryMapper.toDTO(savedEntity);
+
+        observabilityService.stop(getClass().getSimpleName() + ":update");
+
+        return result;
+    }
+
     public void deleteAllDeliveries() {
         String metric = getClass().getSimpleName() + ":deleteAllDeliveries";
         observabilityService.start(metric);
         deliveryRepository.deleteAll();
         observabilityService.stop(metric);
+    }
+
+    private String[] getNullPropertyNames(Object source) {
+        return Arrays.stream(BeanUtils.getPropertyDescriptors(source.getClass()))
+                .filter(pd -> {
+                    try {
+                        return pd.getReadMethod().invoke(source) == null;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .map(PropertyDescriptor::getName)
+                .toArray(String[]::new);
     }
 }
